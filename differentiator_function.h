@@ -23,5 +23,15 @@ void  skip_buffer       (                                 );
 
 Node* go_left_decide    (Node* node                       ); 
 int   get_input         (                                 );
+int   check_data        (char* ptr                        );
+int   transfer_argument (char* ptr                        );
+
+enum Action
+{
+    ADD = 1,
+    SUB = 2,
+    MUL = 3,
+    DIV = 4,
+};
 
 #endif /*AKINATOR_FUNCTION_H*/

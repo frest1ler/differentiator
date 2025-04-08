@@ -149,6 +149,37 @@ void info_dtor(Info_about_text* info)
     free(info);
 }
 
+int check_data(char* ptr)
+{
+    if (strcmp(ptr, "add") == 0){
+        return ADD;
+    }
+    if (strcmp(ptr, "sub") == 0){
+        return SUB;
+    }
+    if (strcmp(ptr, "mul") == 0){
+        return MUL;
+    }
+    if (strcmp(ptr, "div") == 0){
+        return DIV;
+    }
+    return 0;
+}
+
+int transfer_argument(char* ptr)
+{
+    int check    = check_data(ptr);
+    int argument = 0;
+
+    if (check != 0){
+        argument = check;
+    }
+    else{
+        argument = atoi(ptr);
+    }
+    return argument;
+}
+
 void insert_from_file(Info_about_text* info, Tree* tree) 
 {   
     if (!info || !tree){
@@ -162,6 +193,7 @@ void insert_from_file(Info_about_text* info, Tree* tree)
     char  pr_symbol           = 0         ;
     char  symbol              = 0         ;
     int   index_last_sring    = 0         ;
+    int   argument            = 0         ;
 
     for (int size = 0; size < info->size_text; size++) 
     {
@@ -171,6 +203,7 @@ void insert_from_file(Info_about_text* info, Tree* tree)
             size++;
         }
         symbol = info->text[size];  
+
 
         if (size < info->size_text && 
             (symbol == '(' && (pr_symbol == 0 || pr_symbol == '(')) || 
@@ -185,11 +218,15 @@ void insert_from_file(Info_about_text* info, Tree* tree)
                 if (node == NULL)
                 {
                     node = tree->root;
-                    node->data = info->text + index_last_sring;
+                    
+                    argument = transfer_argument(info->text + index_last_sring);
+                    node->data = argument;
                 }
                 else
-                {
-                    node = node_ctor(info->text + index_last_sring, parent);
+                {   
+                    argument = transfer_argument(info->text + index_last_sring);
+
+                    node = node_ctor(argument, parent);
                     parent->left = node;     
                 }
                 if (symbol == '('){
@@ -208,8 +245,10 @@ void insert_from_file(Info_about_text* info, Tree* tree)
             //printf("(%s) = case 3\n", info->text + index_last_sring);
 
             if (strcmp(info->text + index_last_sring, "\0") != 0)
-            {
-                node = node_ctor(info->text + index_last_sring, parent);
+            {   
+                argument = transfer_argument(info->text + index_last_sring);
+
+                node = node_ctor(argument, parent);
 
                 parent->right = node;
                 tree->size++;
@@ -261,14 +300,20 @@ void decide(Tree* tree)
         return; 
     }
 
-    //int found_size = 0;    
-    Node* node = tree->root;
+    Node* parent = NULL      ;  
+    Node* node   = tree->root;
 
     //printf("exp_size = %d\n", tree->size);
     while (tree->size > 0) 
     {
         //printf("go_left, size = %d\n", found_size);
         node = go_left_decide(node);
+
+        parent = node->parent;
+        
+        int value1 = parent->left->data;
+        int value2 = parent->right->data;
+
         //printf("go_back, size = %d\n", found_size);
         //printf("exp=%d, have=%d\n", tree->size, found_size);
         node = go_back(node, tree);

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "dump.h"
 #include "tree_create.h"
+#include "differentiator_function.h"
 
 void dump_first_node(Tree* tree, FILE * point_to_file);
 
@@ -34,9 +35,30 @@ void dump_node(Node* node, FILE * point_to_file)
 {   
     fprintf(point_to_file, "subgraph cluster_A_left {\nlabel=\"Левое облачко A1\";\n");
     fprintf(point_to_file, "style=dotted;\nnode [shape=record];\n");
-   
-    fprintf(point_to_file, "a%p [label=\"{Parent %p | Ptr %p | Data %s | {Left %p | Right %p }}\"];\n", node, node->parent, node, node->data, node->left, node->right);
     
+    fprintf(point_to_file, "a%p [label=\"{Parent %p | Ptr %p | Data ", node, node->parent, node);
+    
+    if (node->right != NULL && node->left != NULL)
+    {
+        if (node->data == ADD){
+            fprintf(point_to_file, "add");
+        }
+        else if (node->data == SUB){
+            fprintf(point_to_file, "sub");
+        }
+        else if (node->data == MUL){
+            fprintf(point_to_file, "mul");
+        }
+        else if (node->data == DIV){
+            fprintf(point_to_file, "div");
+        }
+    }
+    else
+    {
+        fprintf(point_to_file, "%d", node->data);    
+    }
+    fprintf(point_to_file, " | {Left %p | Right %p }}\"];\n", node->left, node->right);
+
     if ((node->parent)->left == node){
     fprintf(point_to_file, "a%p -> a%p [label=\"Left\" dir=forward];\n}\n", node->parent, node);
     }
@@ -60,5 +82,5 @@ void dump_first_node(Tree* tree, FILE * point_to_file)
     //printf("right=%p\n", tree->root->right);
     //printf("data=%s\n", tree->root->data);
 
-    fprintf(point_to_file, "a%p [label=\"{Parent %p | Ptr %p | Type %d | Data %s | {Left %p | Right %p }}\"];\n root -> a%p;", tree->root,tree, tree->root, type, (tree->root)->data, (tree->root)->left, (tree->root)->right, tree->root);
+    fprintf(point_to_file, "a%p [label=\"{Parent %p | Ptr %p | Type %d | Data %d | {Left %p | Right %p }}\"];\n root -> a%p;", tree->root,tree, tree->root, type, (tree->root)->data, (tree->root)->left, (tree->root)->right, tree->root);
 }

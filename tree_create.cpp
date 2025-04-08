@@ -17,7 +17,7 @@ Node* get_pointer_node()
     return node;
 }
 
-Node* node_ctor(char* value, void* parent)
+Node* node_ctor(int value, void* parent)
 {
     Node* node = get_pointer_node();
 
@@ -200,110 +200,6 @@ void bypass(Tree* tree, FILE * point_to_file)
         node = go_back(node, tree);
     }
     //printf("end_bypass\n");
-}
-
-Node* search_node(Tree* tree, char* data)
-{   
-    if (tree == NULL || tree->root == NULL){
-        return NULL; // Проверка на NULL
-    }
-
-    int found_size = 0;    
-    Node* node = tree->root;
-
-    while(strcmp(data, node->data)!= 0 && found_size < tree->size)
-    {
-        node = go_left_search(node, &found_size, data);
-        if (strcmp(node->data, data) == 0){
-            return node;
-        }
-
-        node = go_back_search(node, tree, data);
-
-        if (strcmp(node->data, data) == 0){
-            return node;
-        }
-    }
-    printf("%s : not found\n", node->data);
-    return NULL;
-}
-
-Node* go_left_search(Node* node, int* add_el, char* data) 
-{
-    if (node == NULL){
-        return NULL; 
-    }
-
-    if (node->right == NULL && node->left == NULL && node == node->parent->right){
-
-        if (strcmp(node->data, data) == 0){
-            return node;
-        }
-        (*add_el)++;
-    }
-    else if (node->left != NULL || node->right != NULL && node == node->parent->right){
-
-        if (strcmp(node->data, data) == 0){
-            return node;
-        }
-        (*add_el)++;
-    }
-    while (node->right != NULL || node->left != NULL)
-    {   
-        while (node->left != NULL){
-
-            if (strcmp(node->data, data) == 0){
-            return node;
-            }   
-            //printf("\ndata=%s\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
-            //printf("node->left->data=(%s)\n", node->left->data);
-            node = node->left;
-
-            (*add_el)++;
-        }
-
-        if (node->right != NULL){
-
-            if (strcmp(node->data, data) == 0){
-            return node;
-            }
-            node = node->right;
-            (*add_el)++;
-        }
-    }
-    return node;
-}
-
-Node* go_back_search(Node* node, Tree* tree, char* data) 
-{   
-    Node* old_node = node;
-
-    node = node->parent;
-
-    while(node != tree->root)
-    {   
-        if (strcmp(node->data, data) == 0){
-            return node;
-        }
-
-        if (node->right != NULL && node->right != old_node){
-            //printf("1after_back node=%p\n", node->right);
-            return node->right;
-        }
-        old_node = node        ;
-        node     = node->parent;
-    }
-    //printf("2after_back node=%p\n", node);
-    if(node == tree->root){
-
-        if (strcmp(node->data, data) == 0){
-            return node;
-        }
-        node = node->right;
-    }
-    //printf("3after_back node=%p\n", node);
-
-    return node;
 }
 
 void* get_pointer(size_t element_count, size_t element_size) 
