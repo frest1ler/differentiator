@@ -14,12 +14,14 @@ struct Info_about_text
     char** ptr_line       ;
 };
 
-void  read_commands(Info_about_text* info);
-void  init_pointer_array(Info_about_text* info);
-void  info_dtor(Info_about_text* info);
-void  insert_from_file(Info_about_text* info, Tree* tree);
-void  skip_buffer();
+void  decide            (Tree* tree                       );
+void  read_commands     (Info_about_text* info            );
+void  init_pointer_array(Info_about_text* info            );
+void  info_dtor         (Info_about_text* info            );
+void  insert_from_file  (Info_about_text* info, Tree* tree);
+void  skip_buffer       (                                 );
 
-int   get_input();
+Node* go_left_decide    (Node* node                       ); 
+int   get_input         (                                 );
 
 #endif /*AKINATOR_FUNCTION_H*/

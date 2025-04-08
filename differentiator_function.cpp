@@ -261,17 +261,61 @@ void decide(Tree* tree)
         return; 
     }
 
-    int found_size = 0;    
+    //int found_size = 0;    
     Node* node = tree->root;
 
     //printf("exp_size = %d\n", tree->size);
-    while (found_size < tree->size) 
+    while (tree->size > 0) 
     {
         //printf("go_left, size = %d\n", found_size);
-        //node = go_left(node, tree, &found_size, point_to_file);
+        node = go_left_decide(node);
         //printf("go_back, size = %d\n", found_size);
         //printf("exp=%d, have=%d\n", tree->size, found_size);
         node = go_back(node, tree);
     }
     //printf("end_bypass\n");
+}
+
+Node* go_left_decide(Node* node) 
+{
+    if (node == NULL){
+        return NULL; 
+    }
+
+    while (node->right != NULL || node->left != NULL)
+    {   
+        while (node->left != NULL){   
+            //printf("\ndata=%s\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
+    
+            node = node->left;
+        }
+
+        if (node->right != NULL){
+            node = node->right;
+        }
+    }
+    return node;
+}
+
+void perform_operation(int value1, int value2, Node* node)
+{
+    //if(type)
+
+    int value = 0;
+
+    // if (strcmp(node->data, "div") == 0){
+    //     fill_value();
+    // }
+    // else if (strcmp(node->data, "mul") == 0){
+    //     fill_value();
+    // }
+    // else if (strcmp(node->data, "add") == 0){
+    //     fill_value();
+    // }
+    // else if (strcmp(node->data, "sub") == 0){
+    //     fill_value();
+    // }
+
+    node_destroy(node->left );
+    node_destroy(node->right);
 }
