@@ -303,22 +303,19 @@ void decide(Tree* tree)
     Node* parent = NULL      ;  
     Node* node   = tree->root;
 
-    //printf("exp_size = %d\n", tree->size);
-    while (tree->size > 0) 
+    while (tree->size > 1) 
     {
-        //printf("go_left, size = %d\n", found_size);
         node = go_left_decide(node);
 
-        parent = node->parent;
-        
-        int value1 = parent->left->data;
-        int value2 = parent->right->data;
+        perform_operation(node);
 
-        //printf("go_back, size = %d\n", found_size);
-        //printf("exp=%d, have=%d\n", tree->size, found_size);
-        node = go_back(node, tree);
+        if (node == tree->root){
+            printf("result = %d\n", node->data);
+        }
+        tree->size -=2;
+        
+        node = tree->root;
     }
-    //printf("end_bypass\n");
 }
 
 Node* go_left_decide(Node* node) 
@@ -327,39 +324,50 @@ Node* go_left_decide(Node* node)
         return NULL; 
     }
 
-    while (node->right != NULL || node->left != NULL)
+    while (node->left->left != NULL || node->left->right != NULL ||
+           node->right->left != NULL || node->right->right)
     {   
-        while (node->left != NULL){   
-            //printf("\ndata=%s\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
+        while (node->left->left != NULL){   
+            //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
     
             node = node->left;
+            //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
         }
 
-        if (node->right != NULL){
+        if (node->right->right != NULL){
             node = node->right;
         }
     }
+    //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
+    
     return node;
 }
 
-void perform_operation(int value1, int value2, Node* node)
+void perform_operation(Node* node)
 {
-    //if(type)
+    if (node == NULL){
+        printf("node == NULL\n");
+        return;
+    }
 
-    int value = 0;
+    int value_l = node->left->data ; 
+    int value_r = node->right->data; 
+    int value   = 0                ;
 
-    // if (strcmp(node->data, "div") == 0){
-    //     fill_value();
-    // }
-    // else if (strcmp(node->data, "mul") == 0){
-    //     fill_value();
-    // }
-    // else if (strcmp(node->data, "add") == 0){
-    //     fill_value();
-    // }
-    // else if (strcmp(node->data, "sub") == 0){
-    //     fill_value();
-    // }
+    if (node->data == ADD){
+        value = value_l + value_r;
+    }
+    else if (node->data == SUB){
+        value = value_l - value_r;
+    }
+    else if (node->data == MUL){
+        value = value_l * value_r;
+    }
+    else if (node->data == DIV){
+        value = value_l / value_r;
+    }
+    
+    node->data = value;
 
     node_destroy(node->left );
     node_destroy(node->right);

@@ -71,7 +71,7 @@ void dump_first_node(Tree* tree, FILE * point_to_file)
 {
     int type = NO_BRANCHES;
     
-    if ((tree->root)->data != NULL && (tree->root)->left != NULL){
+    if (tree->root->right == NULL && tree->root->left = NULL){
         type = BRANCHES;
     }
 

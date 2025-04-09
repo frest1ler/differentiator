@@ -19,6 +19,7 @@ void  read_commands     (Info_about_text* info            );
 void  init_pointer_array(Info_about_text* info            );
 void  info_dtor         (Info_about_text* info            );
 void  insert_from_file  (Info_about_text* info, Tree* tree);
+void  perform_operation (Node* node                       );
 void  skip_buffer       (                                 );
 
 Node* go_left_decide    (Node* node                       ); 
