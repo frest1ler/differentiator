@@ -5,6 +5,8 @@
 #include "dump.h"
 #include "differentiator_function.h"
 
+int checking_tree_size(Tree* tree);
+
 Node* get_pointer_node() 
 {
     Node* node = (Node*)calloc(1, sizeof(Node));
@@ -189,8 +191,12 @@ void bypass(Tree* tree, FILE * point_to_file)
     int found_size = 0;    
     Node* node = tree->root;
 
+    if (checking_tree_size(tree)){
+        return;
+    }
+
     while (found_size < tree->size) 
-    {
+    {   
         //printf("go_left, size = %d\n", found_size);
 
         node = go_left(node, &found_size, point_to_file);
@@ -211,4 +217,12 @@ void* get_pointer(size_t element_count, size_t element_size)
         exit(EXIT_FAILURE);
     }
     return pointer;
+}
+
+int checking_tree_size(Tree* tree)
+{
+    if (tree->root->left ==NULL && tree->root->right == NULL && tree->size == 1){
+        return 1;
+    }
+    return 0;
 }

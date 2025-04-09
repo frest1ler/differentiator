@@ -21,7 +21,7 @@ int main()
 
     decide(tree);
 
-    //dump(tree, "data/bata3.dot");
+    dump(tree, "data/bata3.dot");
     
     //dump(tree, "data/bata4.dot");
 
