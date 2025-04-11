@@ -36,9 +36,9 @@ void dump_node(Node* node, FILE * point_to_file)
     fprintf(point_to_file, "subgraph cluster_A_left {\nlabel=\"Левое облачко A1\";\n");
     fprintf(point_to_file, "style=dotted;\nnode [shape=record];\n");
     
-    fprintf(point_to_file, "a%p [label=\"{Parent %p | Ptr %p | Data ", node, node->parent, node);
+    fprintf(point_to_file, "a%p [label=\"{Type %d | Parent %p | Ptr %p | Data ", node, node->type, node->parent, node);
     
-    if (node->right != NULL && node->left != NULL)
+    if (node->type != LEAF)
     {
         if (node->data == ADD){
             fprintf(point_to_file, "add");
@@ -77,5 +77,5 @@ void dump_first_node(Tree* tree, FILE * point_to_file)
     //printf("right=%p\n", tree->root->right);
     //printf("data=%s\n", tree->root->data);
 
-    fprintf(point_to_file, "a%p [label=\"{Parent %p | Ptr %p | Data %d | {Left %p | Right %p }}\"];\n root -> a%p;", tree->root,tree, tree->root, (tree->root)->data, (tree->root)->left, (tree->root)->right, tree->root);
+    fprintf(point_to_file, "a%p [label=\"{Type %d | Parent %p | Ptr %p | Data %d | {Left %p | Right %p }}\"];\n root -> a%p;", tree->root, tree->root->type, tree, tree->root, (tree->root)->data, (tree->root)->left, (tree->root)->right, tree->root);
 }

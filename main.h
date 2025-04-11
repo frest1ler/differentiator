@@ -3,6 +3,7 @@
 
 struct Node
 {   
+    int   type   ;
     int   data   ;
     Node* left   ;
     Node* right  ;
@@ -14,6 +15,13 @@ struct Tree
 {
     int   size;
     Node* root;
+};
+
+enum Type
+{
+    KNOT      = 0,
+    LEAF      = 1,
+    VARIABLES = 2,
 };
 
 #endif /*TREE_H*/

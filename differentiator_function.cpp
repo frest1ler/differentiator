@@ -12,6 +12,8 @@ static void search_new_line(Info_about_text* info);
 static void count_number_lines(Info_about_text* info);
 void        calculate_array_size(Info_about_text *info, const char* fname);
 
+int         checking_variable(char* ptr);
+
 void read_commands(Info_about_text* info)
 {
     assert(info);
@@ -166,18 +168,45 @@ int check_data(char* ptr)
     return 0;
 }
 
-int transfer_argument(char* ptr)
+int transfer_argument(char* ptr, Node* node)
 {
     int check    = check_data(ptr);
     int argument = 0;
+    int type     = 0;
 
     if (check != 0){
         argument = check;
+
     }
-    else{
+    else
+    {
         argument = atoi(ptr);
+
+        if (checking_variable(ptr) == 1){
+            node->type = VARIABLES;
+        }
+        else{
+            node->type = LEAF;
+        }
     }
+
+    node->data = argument;
+    node->type = type    ;
+
     return argument;
+}
+
+int checking_variable(char* ptr)
+{
+    int i = 0;
+
+    while(ptr[i] != '\0'){
+        i++;
+    }
+    if (ptr[i - 1] == ':'){
+        return 1;
+    }
+    return 0;
 }
 
 void insert_from_file(Info_about_text* info, Tree* tree) 
@@ -324,17 +353,17 @@ Node* go_left_decide(Node* node)
         return NULL; 
     }
 
-    while (node->left->left != NULL || node->left->right != NULL ||
-           node->right->left != NULL || node->right->right)
+    while (node->left->type != LEAF || 
+           node->right->type != LEAF)
     {   
-        while (node->left->left != NULL){   
+        while (node->left->type != LEAF){   
             //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
     
             node = node->left;
             //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
         }
 
-        if (node->right->right != NULL){
+        if (node->right->type != LEAF){
             node = node->right;
         }
     }

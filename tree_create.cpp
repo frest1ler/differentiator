@@ -23,9 +23,11 @@ Node* node_ctor(int value, void* parent)
 {
     Node* node = get_pointer_node();
 
-    node->data    = value        ;
-    node->parent  = (Node*)parent;
-    node->pointer = node         ;
+    node->data         = value        ;
+    node->parent       = (Node*)parent;
+    node->pointer      = node         ;
+    node->type         = LEAF         ;
+    node->parent->type = KNOT         ;
 
     //printf("\nnode_ctor\n");
     //printf("data=%s\nptr=%p\nparent=%p\n\n", value, node, parent);
@@ -39,6 +41,8 @@ void node_destroy(Node* node)
         printf("NULL pointer node\n");
         return;
     }
+
+    node->parent->type = LEAF;
 
     if (node->parent->left ==  node){
         node->parent->left =  NULL;
@@ -65,9 +69,10 @@ Tree* ctor_tree()
     }
     Node* node = get_pointer_node();
 
-    node->pointer =  node       ;
-    node->parent  =  (Node*)tree;
-    tree->root    =  node       ;
+    node->pointer = node       ;
+    node->parent  = (Node*)tree;
+    tree->root    = node       ;
+    node->type    = LEAF       ;
 
     return tree;
 }
@@ -145,11 +150,13 @@ Node* go_left_destroy(Node* node, Tree* tree)
 
     while (node->right != NULL || node->left != NULL)
     {   
-        while (node->left != NULL){   
+        while (node->left != NULL){
+            printf("node=%p\ndata=%s\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);   
             node = node->left;
         }
 
         if (node->right != NULL){
+            printf("node=%p\ndata=%s\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);
             node = node->right;
         }
     }
@@ -165,7 +172,7 @@ void bypass_destroy(Tree* tree)
     Node* dest_node  = 0         ;  
     Node* node       = tree->root;
 
-    while (tree->size > 0) 
+    while (tree->size > 1) 
     {
         node = go_left_destroy(node, tree);
 
@@ -177,7 +184,11 @@ void bypass_destroy(Tree* tree)
 
         node_destroy(dest_node);
     }
-    if (tree != NULL){
+    if (tree != NULL)
+    {
+        if (tree->root != NULL){
+            free(tree->root);
+        }
         free(tree);
     }
 }
