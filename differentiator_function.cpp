@@ -189,10 +189,6 @@ int transfer_argument(char* ptr, Node* node)
             node->type = LEAF;
         }
     }
-
-    node->data = argument;
-    node->type = type    ;
-
     return argument;
 }
 
@@ -233,6 +229,7 @@ void insert_from_file(Info_about_text* info, Tree* tree)
         }
         symbol = info->text[size];  
 
+        printf("\nroot_data=%d\n", tree->root->data);
 
         if (size < info->size_text && 
             (symbol == '(' && (pr_symbol == 0 || pr_symbol == '(')) || 
@@ -247,16 +244,20 @@ void insert_from_file(Info_about_text* info, Tree* tree)
                 if (node == NULL)
                 {
                     node = tree->root;
-                    
-                    argument = transfer_argument(info->text + index_last_sring);
+                    argument = transfer_argument(info->text + index_last_sring, node);
                     node->data = argument;
+                    //debug_print_node(node);
                 }
                 else
                 {   
-                    argument = transfer_argument(info->text + index_last_sring);
-
+                    printf("1root_data=%d\n", tree->root->data);
+                    argument = transfer_argument(info->text + index_last_sring, node);
+                    printf("2root_data=%d\n", tree->root->data);
                     node = node_ctor(argument, parent);
-                    parent->left = node;     
+                    printf("3root_data=%d\n", tree->root->data);
+                    //debug_print_node(node);
+                    parent->left = node;   
+                    printf("4root_data=%d\n", tree->root->data);  
                 }
                 if (symbol == '('){
                 parent = node;
@@ -275,10 +276,10 @@ void insert_from_file(Info_about_text* info, Tree* tree)
 
             if (strcmp(info->text + index_last_sring, "\0") != 0)
             {   
-                argument = transfer_argument(info->text + index_last_sring);
+                argument = transfer_argument(info->text + index_last_sring, node);
 
                 node = node_ctor(argument, parent);
-
+                //debug_print_node(node);
                 parent->right = node;
                 tree->size++;
             }
@@ -332,6 +333,8 @@ void decide(Tree* tree)
     Node* parent = NULL      ;  
     Node* node   = tree->root;
 
+    debug_print_node(node);
+    
     while (tree->size > 1) 
     {
         node = go_left_decide(node);
@@ -353,23 +356,22 @@ Node* go_left_decide(Node* node)
         return NULL; 
     }
 
-    while (node->left->type != LEAF || 
-           node->right->type != LEAF)
+    while (node->left != NULL || node->right != NULL)
     {   
-        while (node->left->type != LEAF){   
-            //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
+        while (node->left != NULL){   
+            debug_print_node(node);
     
             node = node->left;
-            //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
+            debug_print_node(node);
         }
 
-        if (node->right->type != LEAF){
+        if (node->right != NULL){
             node = node->right;
         }
     }
-    //printf("\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
+    debug_print_node(node);
     
-    return node;
+    return node->parent;
 }
 
 void perform_operation(Node* node)
@@ -378,7 +380,10 @@ void perform_operation(Node* node)
         printf("node == NULL\n");
         return;
     }
-
+    if (node->type != KNOT){
+        printf("node->data->type != KNOT\n");
+        return;
+    }
     int value_l = node->left->data ; 
     int value_r = node->right->data; 
     int value   = 0                ;
@@ -400,4 +405,12 @@ void perform_operation(Node* node)
 
     node_destroy(node->left );
     node_destroy(node->right);
+}
+
+void debug_print_node(Node* node)
+{
+    assert(node);
+
+    printf("\ntype=%d\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", 
+    node->type, node->data, node->pointer, node->parent, node->left, node->right);
 }

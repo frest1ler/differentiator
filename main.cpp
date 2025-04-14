@@ -9,16 +9,17 @@ int main()
     Tree*            tree = ctor_tree();
     Info_about_text* info = (Info_about_text*)get_pointer(1, sizeof(Info_about_text));
 
+    printf("f_dump\n");
+
     dump(tree, "data/bata.dot");
 
     insert_from_file(info, tree);
-
-    printf("f_dump\n");
+    
+    printf("s_dump\n");
 
     dump(tree, "data/bata2.dot");
 
-    printf("s_dump\n");
-
+    printf("decide\n");
     decide(tree);
 
     dump(tree, "data/bata3.dot");

@@ -20,12 +20,13 @@ void  init_pointer_array(Info_about_text* info            );
 void  info_dtor         (Info_about_text* info            );
 void  insert_from_file  (Info_about_text* info, Tree* tree);
 void  perform_operation (Node* node                       );
+void  debug_print_node  (Node* node                       );
 void  skip_buffer       (                                 );
 
 Node* go_left_decide    (Node* node                       ); 
 int   get_input         (                                 );
 int   check_data        (char* ptr                        );
-int   transfer_argument (char* ptr                        );
+int   transfer_argument (char* ptr, Node* node            );
 
 enum Action
 {

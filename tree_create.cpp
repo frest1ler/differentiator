@@ -44,17 +44,17 @@ void node_destroy(Node* node)
 
     node->parent->type = LEAF;
 
-    if (node->parent->left ==  node){
-        node->parent->left =  NULL;
+    if (node->parent->left == node){
+        node->parent->left = NULL;
     }
     else{
         node->parent->right = NULL;
     }
 
-    node->left =     NULL;
-    node->right =    NULL;
-    node->parent =   NULL;
-    node->pointer =  NULL;
+    node->left =    NULL;
+    node->right =   NULL;
+    node->parent =  NULL;
+    node->pointer = NULL;
 
     free(node);
 }
@@ -112,21 +112,18 @@ Node* go_left(Node* node, int* add_el, FILE * point_to_file)
 
     if (node->right == NULL && node->left == NULL && node == node->parent->right){
         dump_node(node, point_to_file);
-        //printf("hlt\n");
-        //printf("node=%p\ndata=%s\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);
+        debug_print_node(node);
         (*add_el)++;
     }
     else if (node->left != NULL || node->right != NULL && node == node->parent->right){
         dump_node(node, point_to_file);
-        //printf("hltx2\n");
-        //printf("node=%p\ndata=%s\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);
+        debug_print_node(node);
         (*add_el)++;
     }
     while (node->right != NULL || node->left != NULL)
     {   
         while (node->left != NULL){   
-            //printf("\ndata=%s\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", node->data, node->pointer, node->parent, node->left, node->right);
-            //printf("node->left->data=(%s)\n", node->left->data);
+            debug_print_node(node);
             node = node->left;
 
             dump_node(node, point_to_file); 
@@ -134,6 +131,7 @@ Node* go_left(Node* node, int* add_el, FILE * point_to_file)
         }
 
         if (node->right != NULL){
+            debug_print_node(node);
             node = node->right;
             dump_node(node, point_to_file);
             (*add_el)++;
@@ -151,12 +149,12 @@ Node* go_left_destroy(Node* node, Tree* tree)
     while (node->right != NULL || node->left != NULL)
     {   
         while (node->left != NULL){
-            printf("node=%p\ndata=%s\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);   
+            printf("node=%p\ndata=%d\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);   
             node = node->left;
         }
 
         if (node->right != NULL){
-            printf("node=%p\ndata=%s\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);
+            printf("node=%p\ndata=%d\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);
             node = node->right;
         }
     }
