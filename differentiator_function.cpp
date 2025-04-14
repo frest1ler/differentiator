@@ -229,8 +229,6 @@ void insert_from_file(Info_about_text* info, Tree* tree)
         }
         symbol = info->text[size];  
 
-        printf("\nroot_data=%d\n", tree->root->data);
-
         if (size < info->size_text && 
             (symbol == '(' && (pr_symbol == 0 || pr_symbol == '(')) || 
             (pr_symbol == '(' && symbol ==';') ||
@@ -250,14 +248,10 @@ void insert_from_file(Info_about_text* info, Tree* tree)
                 }
                 else
                 {   
-                    printf("1root_data=%d\n", tree->root->data);
                     argument = transfer_argument(info->text + index_last_sring, node);
-                    printf("2root_data=%d\n", tree->root->data);
                     node = node_ctor(argument, parent);
-                    printf("3root_data=%d\n", tree->root->data);
                     //debug_print_node(node);
                     parent->left = node;   
-                    printf("4root_data=%d\n", tree->root->data);  
                 }
                 if (symbol == '('){
                 parent = node;
@@ -356,6 +350,10 @@ Node* go_left_decide(Node* node)
         return NULL; 
     }
 
+    if (node->left->type == LEAF && node->right->type == KNOT){
+        node = node->right;
+    }
+
     while (node->left != NULL || node->right != NULL)
     {   
         while (node->left != NULL){   
@@ -370,12 +368,13 @@ Node* go_left_decide(Node* node)
         }
     }
     debug_print_node(node);
-    
+    printf("end_left_decide\n");
     return node->parent;
 }
 
 void perform_operation(Node* node)
-{
+{   
+    printf("\n\nperform_operation\n");
     if (node == NULL){
         printf("node == NULL\n");
         return;
@@ -400,7 +399,7 @@ void perform_operation(Node* node)
     else if (node->data == DIV){
         value = value_l / value_r;
     }
-    
+    printf("value=%d\n", value);
     node->data = value;
 
     node_destroy(node->left );

@@ -112,18 +112,18 @@ Node* go_left(Node* node, int* add_el, FILE * point_to_file)
 
     if (node->right == NULL && node->left == NULL && node == node->parent->right){
         dump_node(node, point_to_file);
-        debug_print_node(node);
+        //debug_print_node(node);
         (*add_el)++;
     }
     else if (node->left != NULL || node->right != NULL && node == node->parent->right){
         dump_node(node, point_to_file);
-        debug_print_node(node);
+        //debug_print_node(node);
         (*add_el)++;
     }
     while (node->right != NULL || node->left != NULL)
     {   
         while (node->left != NULL){   
-            debug_print_node(node);
+            //debug_print_node(node);
             node = node->left;
 
             dump_node(node, point_to_file); 
@@ -131,7 +131,7 @@ Node* go_left(Node* node, int* add_el, FILE * point_to_file)
         }
 
         if (node->right != NULL){
-            debug_print_node(node);
+            //debug_print_node(node);
             node = node->right;
             dump_node(node, point_to_file);
             (*add_el)++;
