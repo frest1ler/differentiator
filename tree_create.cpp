@@ -19,14 +19,14 @@ Node* get_pointer_node()
     return node;
 }
 
-Node* node_ctor(int value, void* parent)
+Node* node_ctor(long value, void* parent, int* type)
 {
     Node* node = get_pointer_node();
 
     node->data         = value        ;
     node->parent       = (Node*)parent;
     node->pointer      = node         ;
-    node->type         = LEAF         ;
+    node->type         = *type        ;
     node->parent->type = KNOT         ;
 
     //printf("\nnode_ctor\n");
@@ -149,12 +149,11 @@ Node* go_left_destroy(Node* node, Tree* tree)
     while (node->right != NULL || node->left != NULL)
     {   
         while (node->left != NULL){
-            printf("node=%p\ndata=%d\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);   
-            node = node->left;
+            debug_print_node(node);
         }
 
         if (node->right != NULL){
-            printf("node=%p\ndata=%d\nparent=%p\nptr=%p\nleft=%p\nright=%p\n", node, node->data, node->parent, node->pointer, node->left, node->right);
+            debug_print_node(node);
             node = node->right;
         }
     }
@@ -206,12 +205,8 @@ void bypass(Tree* tree, FILE * point_to_file)
 
     while (found_size < tree->size) 
     {   
-        //printf("go_left, size = %d\n", found_size);
-
         node = go_left(node, &found_size, point_to_file);
 
-        //printf("go_back, size = %d\n", found_size);
-        //printf("exp=%d, have=%d\n", tree->size, found_size);
         node = go_back(node, tree);
     }
     //printf("end_bypass\n");

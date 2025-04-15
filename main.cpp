@@ -13,6 +13,7 @@ int main()
 
     dump(tree, "data/bata.dot");
 
+    printf("insert\n");
     insert_from_file(info, tree);
     
     printf("s_dump\n");

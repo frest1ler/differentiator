@@ -4,7 +4,7 @@
 struct Node
 {   
     int   type   ;
-    int   data   ;
+    long  data   ;
     Node* left   ;
     Node* right  ;
     Node* pointer;

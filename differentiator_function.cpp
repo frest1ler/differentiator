@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <assert.h>
+#include <ctype.h>
 #include "differentiator_function.h"
 #include "tree_create.h"
 
@@ -45,7 +46,6 @@ void read_commands(Info_about_text* info)
     fclose(point_to_file);
     printf("%s\n", info->text);
     info->text[info->size_text - 1] = '\0';
-
     return;
 }
 
@@ -97,8 +97,6 @@ static void search_new_line(Info_about_text* info)
 
     info->ptr_line = (char**)calloc(info->max_number_line, sizeof(char*));
 
-    char symbol         = 0;
-    size_t line_element = 0;
     size_t number_line  = 1;
 
     info->ptr_line[0] = info->text;
@@ -168,41 +166,38 @@ int check_data(char* ptr)
     return 0;
 }
 
-int transfer_argument(char* ptr, Node* node)
+int check_data_to_symbols(char* ptr)
 {
-    int check    = check_data(ptr);
-    int argument = 0;
-    int type     = 0;
-
-    if (check != 0){
-        argument = check;
-
-    }
-    else
-    {
-        argument = atoi(ptr);
-
-        if (checking_variable(ptr) == 1){
-            node->type = VARIABLES;
-        }
-        else{
-            node->type = LEAF;
-        }
-    }
-    return argument;
-}
-
-int checking_variable(char* ptr)
-{
-    int i = 0;
-
-    while(ptr[i] != '\0'){
-        i++;
-    }
-    if (ptr[i - 1] == ':'){
+    if (isdigit(ptr[0]) == 0){
         return 1;
     }
     return 0;
+}
+
+long transfer_argument(char* ptr, int* type)
+{
+    int check    = check_data(ptr);
+    long argument = 0;
+
+    if (check != 0){
+        argument = (long)check;
+    }
+    else
+    {
+        if (check_data_to_symbols(ptr) == 1){
+            *type = VARIABLES;
+            argument = (long)ptr;
+
+            printf("variables: %s\narg=%ld\n", ptr, argument);
+        }
+        else{
+            printf("leaf: %s\n", ptr);
+            *type = LEAF;
+
+            argument = atoi(ptr);
+        }
+    }
+    return argument;
 }
 
 void insert_from_file(Info_about_text* info, Tree* tree) 
@@ -215,41 +210,41 @@ void insert_from_file(Info_about_text* info, Tree* tree)
 
     Node* parent              = tree->root;
     Node* node                = NULL      ;
+    long  argument            = 0         ;
     char  pr_symbol           = 0         ;
     char  symbol              = 0         ;
     int   index_last_sring    = 0         ;
-    int   argument            = 0         ;
+    int   type                = 0         ;
 
     for (int size = 0; size < info->size_text; size++) 
-    {
+    {   
         while (size < info->size_text && info->text[size] != '(' && info->text[size] != ')' 
                && info->text[size] != ';' && info->text[size] != '\r' && info->text[size] != '\0') 
         {
             size++;
         }
         symbol = info->text[size];  
-
+        //printf("string: %s\n", info->text + index_last_sring);
         if (size < info->size_text && 
             (symbol == '(' && (pr_symbol == 0 || pr_symbol == '(')) || 
             (pr_symbol == '(' && symbol ==';') ||
             (pr_symbol == ')' && symbol == ';'))
         {   
             info->text[size] = '\0';
-
+            //printf("case1\n");
             if (strcmp(info->text + index_last_sring, "\0") != 0)
-            {
-                //printf("%s = case 1\n", info->text + index_last_sring);
+            {   
                 if (node == NULL)
                 {
                     node = tree->root;
-                    argument = transfer_argument(info->text + index_last_sring, node);
+                    argument = transfer_argument(info->text + index_last_sring, &type);
                     node->data = argument;
                     //debug_print_node(node);
                 }
                 else
                 {   
-                    argument = transfer_argument(info->text + index_last_sring, node);
-                    node = node_ctor(argument, parent);
+                    argument = transfer_argument(info->text + index_last_sring, &type);
+                    node = node_ctor(argument, parent, &type);
                     //debug_print_node(node);
                     parent->left = node;   
                 }
@@ -265,17 +260,17 @@ void insert_from_file(Info_about_text* info, Tree* tree)
         else if (size < info->size_text && pr_symbol == ';' && (symbol == '(' || symbol == ')')) 
         {   
             info->text[size] = '\0';
-
+            //printf("case2\n");
             //printf("(%s) = case 3\n", info->text + index_last_sring);
 
             if (strcmp(info->text + index_last_sring, "\0") != 0)
             {   
-                argument = transfer_argument(info->text + index_last_sring, node);
-
-                node = node_ctor(argument, parent);
+                argument = transfer_argument(info->text + index_last_sring, &type);
+                node = node_ctor(argument, parent, &type);
                 //debug_print_node(node);
                 parent->right = node;
                 tree->size++;
+
             }
             if (symbol == '('){
                 parent = node;
@@ -284,7 +279,7 @@ void insert_from_file(Info_about_text* info, Tree* tree)
         else if (size < info->size_text && symbol == ')' && pr_symbol == ')')
         {
             info->text[size] = '\0';
-
+            //printf("case3\n");
             if (parent != tree->root){    
                 parent = parent->parent;
             }
@@ -336,7 +331,7 @@ void decide(Tree* tree)
         perform_operation(node);
 
         if (node == tree->root){
-            printf("result = %d\n", node->data);
+            printf("result = %ld\n", node->data);
         }
         tree->size -=2;
         
@@ -399,7 +394,7 @@ void perform_operation(Node* node)
     else if (node->data == DIV){
         value = value_l / value_r;
     }
-    printf("value=%d\n", value);
+    printf("value=%ld\n", value);
     node->data = value;
 
     node_destroy(node->left );
@@ -408,8 +403,12 @@ void perform_operation(Node* node)
 
 void debug_print_node(Node* node)
 {
-    assert(node);
-
-    printf("\ntype=%d\ndata=%d\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", 
-    node->type, node->data, node->pointer, node->parent, node->left, node->right);
+    if (node == NULL){
+        printf("node == NULL\n");
+    }
+    else
+    {
+        printf("\ntype=%d\ndata=%ld\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", 
+        node->type, node->data, node->pointer, node->parent, node->left, node->right);    
+    }
 }

@@ -8,7 +8,7 @@ const int RIGHT     =    1;
 const int POISON    = -333;
 
 Node* get_pointer_node();
-Node* node_ctor(int value, void* parent);
+Node* node_ctor(long value, void* parent, int* type);
 Node* go_left (Node* node, int* add_el, FILE * point_to_file);
 Node* go_back (Node* node, Tree* tree);
 
