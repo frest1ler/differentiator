@@ -72,7 +72,7 @@ Tree* ctor_tree()
     node->pointer = node       ;
     node->parent  = (Node*)tree;
     tree->root    = node       ;
-    node->type    = LEAF       ;
+    node->type    = KNOT       ;
 
     return tree;
 }
@@ -102,7 +102,7 @@ Node* go_back(Node* node, Tree* tree)
     return node;
 }
 
-Node* go_left(Node* node, int* add_el, FILE * point_to_file) 
+Node* go_left(Tree* tree, Node* node, int* add_el, FILE * point_to_file) 
 {
     if (node == NULL){
         return NULL; 
@@ -111,19 +111,23 @@ Node* go_left(Node* node, int* add_el, FILE * point_to_file)
     //printf("node = %p right = %p left = %p\n", node, node->right, node->left);  
 
     if (node->right == NULL && node->left == NULL && node == node->parent->right){
+        //printf("case1\n");
         dump_node(node, point_to_file);
         //debug_print_node(node);
         (*add_el)++;
     }
-    else if (node->left != NULL || node->right != NULL && node == node->parent->right){
+    else if ((node != tree->root) && (node->left != NULL || node->right != NULL) &&
+             (node == node->parent->right)){
+        //printf("case2\n");
         dump_node(node, point_to_file);
         //debug_print_node(node);
         (*add_el)++;
     }
     while (node->right != NULL || node->left != NULL)
     {   
+        printf("case3\n");
         while (node->left != NULL){   
-            //debug_print_node(node);
+            debug_print_node(node);
             node = node->left;
 
             dump_node(node, point_to_file); 
@@ -131,7 +135,7 @@ Node* go_left(Node* node, int* add_el, FILE * point_to_file)
         }
 
         if (node->right != NULL){
-            //debug_print_node(node);
+            debug_print_node(node);
             node = node->right;
             dump_node(node, point_to_file);
             (*add_el)++;
@@ -205,8 +209,9 @@ void bypass(Tree* tree, FILE * point_to_file)
 
     while (found_size < tree->size) 
     {   
-        node = go_left(node, &found_size, point_to_file);
-
+        node = go_left(tree, node, &found_size, point_to_file);
+        printf("after_left\n");
+        debug_print_node(node);
         node = go_back(node, tree);
     }
     //printf("end_bypass\n");

@@ -55,10 +55,10 @@ void dump_node(Node* node, FILE * point_to_file)
     }
     else
     {
-        fprintf(point_to_file, "%d", node->data);    
+        fprintf(point_to_file, "%ld", node->data);    
     }
     fprintf(point_to_file, " | {Left %p | Right %p }}\"];\n", node->left, node->right);
-
+    debug_print_node(node);
     if ((node->parent)->left == node){
     fprintf(point_to_file, "a%p -> a%p [label=\"Left\" dir=forward];\n}\n", node->parent, node);
     }
@@ -68,14 +68,10 @@ void dump_node(Node* node, FILE * point_to_file)
 }
 
 void dump_first_node(Tree* tree, FILE * point_to_file)
-{
-
+{   
+    printf("dump_first_node\n");
+    debug_print_node(tree->root);
     fprintf(point_to_file, "subgraph cluster_A {label=\"Облачко A\";style=dashed;node [shape=record];\n");
-    //printf("parent=%p\n", tree);
-    //printf("ptr=%p\n", tree->root);
-    //printf("left=%p\n", tree->root->left);
-    //printf("right=%p\n", tree->root->right);
-    //printf("data=%s\n", tree->root->data);
-
-    fprintf(point_to_file, "a%p [label=\"{Type %d | Parent %p | Ptr %p | Data %d | {Left %p | Right %p }}\"];\n root -> a%p;", tree->root, tree->root->type, tree, tree->root, (tree->root)->data, (tree->root)->left, (tree->root)->right, tree->root);
+    fprintf(point_to_file, "a%p [label=\"{Type %d | Parent %p | Ptr %p | Data %ld | {Left %p | Right %p }}\"];\n root -> a%p;", 
+    tree->root, tree->root->type, tree, tree->root, (tree->root)->data, (tree->root)->left, (tree->root)->right, tree->root);
 }

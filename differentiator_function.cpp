@@ -378,9 +378,24 @@ void perform_operation(Node* node)
         printf("node->data->type != KNOT\n");
         return;
     }
-    int value_l = node->left->data ; 
-    int value_r = node->right->data; 
-    int value   = 0                ;
+    long value_l = 0; 
+    long value_r = 0; 
+    long value   = 0;
+
+    if (node->left->type == VARIABLES){
+        printf("enter value:\n");
+        scanf("%ld", &value_l);
+    }
+    else{
+        value_l = node->left->data;     
+    }
+    if (node->right->type == VARIABLES){
+        printf("enter value:\n");
+        scanf("%ld", &value_r);
+    }
+    else{
+        value_r = node->right->data;     
+    }
 
     if (node->data == ADD){
         value = value_l + value_r;
