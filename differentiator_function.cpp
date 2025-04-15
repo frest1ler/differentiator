@@ -322,7 +322,7 @@ void decide(Tree* tree)
     Node* parent = NULL      ;  
     Node* node   = tree->root;
 
-    debug_print_node(node);
+    //debug_print_node(node);
     
     while (tree->size > 1) 
     {
@@ -352,24 +352,24 @@ Node* go_left_decide(Node* node)
     while (node->left != NULL || node->right != NULL)
     {   
         while (node->left != NULL){   
-            debug_print_node(node);
+            //debug_print_node(node);
     
             node = node->left;
-            debug_print_node(node);
+            //debug_print_node(node);
         }
 
         if (node->right != NULL){
             node = node->right;
         }
     }
-    debug_print_node(node);
-    printf("end_left_decide\n");
+    //debug_print_node(node);
+    //printf("end_left_decide\n");
     return node->parent;
 }
 
 void perform_operation(Node* node)
 {   
-    printf("\n\nperform_operation\n");
+    //printf("\n\nperform_operation\n");
     if (node == NULL){
         printf("node == NULL\n");
         return;

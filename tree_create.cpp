@@ -102,7 +102,7 @@ Node* go_back(Node* node, Tree* tree)
     return node;
 }
 
-Node* go_left(Tree* tree, Node* node, int* add_el, FILE * point_to_file) 
+Node* go_left(Tree* tree, Node* node, int* found_size, FILE * point_to_file) 
 {
     if (node == NULL){
         return NULL; 
@@ -114,32 +114,39 @@ Node* go_left(Tree* tree, Node* node, int* add_el, FILE * point_to_file)
         //printf("case1\n");
         dump_node(node, point_to_file);
         //debug_print_node(node);
-        (*add_el)++;
+        (*found_size)++;
+        //printf("found_size = %d\n", *found_size);
     }
-    else if ((node != tree->root) && (node->left != NULL || node->right != NULL) &&
+    else if ((node != tree->root) &&
              (node == node->parent->right)){
         //printf("case2\n");
+        if (*found_size == tree->size - 1){
+            (*found_size)++;
+            return node;
+        }
         dump_node(node, point_to_file);
         //debug_print_node(node);
-        (*add_el)++;
+        (*found_size)++;
+        //printf("found_size = %d\n", *found_size);
     }
-    while (node->right != NULL || node->left != NULL)
+    while ((node->right != NULL || node->left != NULL) && (*found_size <= tree->size - 1))
     {   
-        printf("case3\n");
-        while (node->left != NULL){   
-            debug_print_node(node);
+        //printf("case3\n");
+        while (node->left != NULL && (*found_size <= tree->size - 1)){   
+            //debug_print_node(node);
             node = node->left;
 
             dump_node(node, point_to_file); 
-            (*add_el)++;
+            (*found_size)++;
         }
-
-        if (node->right != NULL){
-            debug_print_node(node);
+        //printf("found_size = %d\n", *found_size);
+        if (node->right != NULL && (*found_size <= tree->size - 1)){
+            //debug_print_node(node);
             node = node->right;
             dump_node(node, point_to_file);
-            (*add_el)++;
+            (*found_size)++;
         }
+        //printf("found_size = %d\n", *found_size);
     }
     return node;
 }
@@ -206,12 +213,13 @@ void bypass(Tree* tree, FILE * point_to_file)
     if (checking_tree_size(tree)){
         return;
     }
-
+    //printf("tree_size=%d", tree->size);
     while (found_size < tree->size) 
     {   
+        //printf("found_size = %d", found_size);
         node = go_left(tree, node, &found_size, point_to_file);
-        printf("after_left\n");
-        debug_print_node(node);
+        //printf("after_left\n");
+        //debug_print_node(node);
         node = go_back(node, tree);
     }
     //printf("end_bypass\n");
