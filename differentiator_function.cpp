@@ -9,6 +9,15 @@
 #include "differentiator_function.h"
 #include "tree_create.h"
 
+void  perform_operation         (Node* node                              );
+void  scanf_if_variable         (Node* node, long* value_l, long* value_r);
+Node* go_left_decide            (Node* node                              ); 
+long  transfer_argument         (char* ptr, int* type                    );
+long  perform_math_operation    (Node* node, long value_l, long value_r  );
+char  determining_last_index_row(Info_about_text* info, size_t* size     );
+int   check_data                (char* ptr                               );
+int   check_data_to_symbols     (char* ptr                               );
+
 void info_dtor(Info_about_text* info)
 {
     if (info == NULL){
@@ -77,6 +86,20 @@ long transfer_argument(char* ptr, int* type)
     return argument;
 }
 
+char determining_last_index_row(Info_about_text* info, size_t* size)
+{
+    char symbol = 0;
+
+    while (*size < info->size_text && info->text[*size] != '(' && info->text[*size] != ')' 
+               && info->text[*size] != ';' && info->text[*size] != '\r' && info->text[*size] != '\0') 
+    {
+        (*size)++;
+    }
+    symbol = info->text[*size]; 
+
+    return symbol;   
+}
+
 void insert_from_file(Info_about_text* info, Tree* tree) 
 {   
     if (!info || !tree){
@@ -95,13 +118,8 @@ void insert_from_file(Info_about_text* info, Tree* tree)
 
     for (size_t size = 0; size < info->size_text; size++) 
     {   
-        while (size < info->size_text && info->text[size] != '(' && info->text[size] != ')' 
-               && info->text[size] != ';' && info->text[size] != '\r' && info->text[size] != '\0') 
-        {
-            size++;
-        }
-        symbol = info->text[size];  
-        //printf("string: %s\n", info->text + index_last_sring);
+        symbol = determining_last_index_row(info, &size);  //printf("string: %s\n", info->text + index_last_sring);
+
         if (size < info->size_text && 
             (symbol == '(' && (pr_symbol == 0 || pr_symbol == '(')) || 
             (pr_symbol == '(' && symbol ==';') ||
