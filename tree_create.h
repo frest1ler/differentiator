@@ -11,6 +11,7 @@ Node* get_pointer_node(                                                         
 Node* node_ctor       (long value, void* parent, int* type                      );
 Node* go_left         (Tree* tree, Node* node, int* add_el, FILE * point_to_file); 
 Node* go_back         (Node* node, Tree* tree                                   );
+Node* go_left_destroy (Node* node                                               ); 
 
 Tree* ctor_tree       (                                                         );
 

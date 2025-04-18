@@ -151,7 +151,7 @@ Node* go_left(Tree* tree, Node* node, int* found_size, FILE * point_to_file)
     return node;
 }
 
-Node* go_left_destroy(Node* node, Tree* tree) 
+Node* go_left_destroy(Node* node) 
 {
     if (node == NULL){
         return NULL;
@@ -182,7 +182,7 @@ void bypass_destroy(Tree* tree)
 
     while (tree->size > 1) 
     {
-        node = go_left_destroy(node, tree);
+        node = go_left_destroy(node);
 
         dest_node = node;
 

@@ -17,6 +17,14 @@ struct Tree
     Node* root;
 };
 
+struct Info_about_text
+{
+    size_t max_number_line;
+    size_t size_text      ;
+    char*  text           ;
+    char** ptr_line       ;
+};
+
 enum Type
 {
     KNOT      = 0,

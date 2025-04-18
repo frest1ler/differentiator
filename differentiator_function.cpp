@@ -9,129 +9,6 @@
 #include "differentiator_function.h"
 #include "tree_create.h"
 
-static void search_new_line(Info_about_text* info);
-static void count_number_lines(Info_about_text* info);
-void        calculate_array_size(Info_about_text *info, const char* fname);
-
-int         checking_variable(char* ptr);
-
-void read_commands(Info_about_text* info)
-{
-    assert(info);
-
-    const char* fname = "TREE_INITIAL_DATA.txt"; 
-
-    FILE * point_to_file = fopen(fname, "rb");
-
-    if (!point_to_file) 
-    {
-        printf("The file %s does not open\n", fname);
-
-        exit(EXIT_FAILURE);
-    }
-
-    calculate_array_size(info, fname);
-
-    int number_successfully_read_chars = fread(info->text, 1, info->size_text, point_to_file);
-
-    if (number_successfully_read_chars + 1 != info->size_text)
-    {
-        printf("ERROR: fread didn't read enough chars\n"
-               "info->size_text = %d\n"
-               "number_successfully_read_chars = %d\n",
-               info->size_text, number_successfully_read_chars);
-
-        exit(EXIT_FAILURE);
-    }
-    fclose(point_to_file);
-    printf("%s\n", info->text);
-    info->text[info->size_text - 1] = '\0';
-    return;
-}
-
-void init_pointer_array(Info_about_text* info)
-{
-    assert(info);
-
-    count_number_lines(info);
-
-    search_new_line(info);
-}
-
-void calculate_array_size(Info_about_text *info, const char* fname)
-{
-    assert(info);
-    assert(fname);
-
-    struct stat data_for_file = {};
-
-    stat(fname, &data_for_file);
-
-    info->size_text = data_for_file.st_size + 1;
-
-    if (!info->size_text)
-    {
-        printf("size_text = 0\n");
-
-        exit(EXIT_FAILURE);
-    }
-    info->text = (char*)calloc(info->size_text, sizeof(char));
-
-    if (info->text == NULL)
-    {
-        printf("ERROR: calculate_array_size; text = NULL\n");
-
-        exit(EXIT_FAILURE);
-    }
-}
-
-static void search_new_line(Info_about_text* info)
-{
-    if (!info)
-    {
-        printf("structure transfer error\n");
-
-        exit(EXIT_FAILURE);
-    }
-    assert(info->text);
-
-    info->ptr_line = (char**)calloc(info->max_number_line, sizeof(char*));
-
-    size_t number_line  = 1;
-
-    info->ptr_line[0] = info->text;
-    
-    for(int i = 0; i < info->size_text - 1; i++)
-    {
-
-        if (info->text[i] == '\0')
-        {
-            info->ptr_line[number_line] = (info->text + i + 1);
-
-            number_line++;
-        }
-    }
-}
-
-static void count_number_lines(Info_about_text* info)
-{
-    assert(info);
-
-    info->max_number_line = 1;
-
-    char symbol = 0;
-
-    for(int line_element = 0; (symbol = info->text[line_element]) &&
-        line_element < info->size_text; line_element++)
-    {
-        if (symbol == '\n')
-        {
-            info->max_number_line++;
-            info->text[line_element] = '\0';
-        }
-    }
-}
-
 void info_dtor(Info_about_text* info)
 {
     if (info == NULL){
@@ -208,15 +85,15 @@ void insert_from_file(Info_about_text* info, Tree* tree)
     }
     read_commands(info);
 
-    Node* parent              = tree->root;
-    Node* node                = NULL      ;
-    long  argument            = 0         ;
-    char  pr_symbol           = 0         ;
-    char  symbol              = 0         ;
-    int   index_last_sring    = 0         ;
-    int   type                = 0         ;
+    Node*  parent              = tree->root;
+    Node*  node                = NULL      ;
+    size_t index_last_sring    = 0         ;
+    long   argument            = 0         ;
+    char   pr_symbol           = 0         ;
+    char   symbol              = 0         ;
+    int    type                = 0         ;
 
-    for (int size = 0; size < info->size_text; size++) 
+    for (size_t size = 0; size < info->size_text; size++) 
     {   
         while (size < info->size_text && info->text[size] != '(' && info->text[size] != ')' 
                && info->text[size] != ';' && info->text[size] != '\r' && info->text[size] != '\0') 
@@ -318,8 +195,7 @@ void decide(Tree* tree)
     if (tree == NULL || tree->root == NULL){
         return; 
     }
-
-    Node* parent = NULL      ;  
+  
     Node* node   = tree->root;
 
     //debug_print_node(node);
@@ -380,36 +256,11 @@ void perform_operation(Node* node)
     }
     long value_l = 0; 
     long value_r = 0; 
-    long value   = 0;
 
-    if (node->left->type == VARIABLES){
-        printf("enter value:\n");
-        scanf("%ld", &value_l);
-    }
-    else{
-        value_l = node->left->data;     
-    }
-    if (node->right->type == VARIABLES){
-        printf("enter value:\n");
-        scanf("%ld", &value_r);
-    }
-    else{
-        value_r = node->right->data;     
-    }
+    scanf_if_variable(node, &value_l, &value_r);
 
-    if (node->data == ADD){
-        value = value_l + value_r;
-    }
-    else if (node->data == SUB){
-        value = value_l - value_r;
-    }
-    else if (node->data == MUL){
-        value = value_l * value_r;
-    }
-    else if (node->data == DIV){
-        value = value_l / value_r;
-    }
-    printf("value=%ld\n", value);
+    long value = perform_math_operation(node, value_l, value_r);
+    
     node->data = value;
 
     node_destroy(node->left );
@@ -426,4 +277,41 @@ void debug_print_node(Node* node)
         printf("\ntype=%d\ndata=%ld\nptr=%p\nparent=%p\nleft=%p\nright=%p\n", 
         node->type, node->data, node->pointer, node->parent, node->left, node->right);    
     }
+}
+
+void scanf_if_variable(Node* node, long* value_l, long* value_r)
+{
+    if (node->left->type == VARIABLES ){
+        printf("enter value:\n");
+        scanf("%ld", value_l);
+    }
+    else{
+        *value_l = node->left->data;     
+    }
+    if (node->right->type == VARIABLES){
+        printf("enter value:\n");
+        scanf("%ld", value_r);
+    }
+    else{
+        *value_r = node->right->data;     
+    }
+}
+
+long perform_math_operation(Node* node, long value_l, long value_r)
+{   
+    long value = 0;
+
+    if (node->data == ADD){
+        value = value_l + value_r;
+    }
+    else if (node->data == SUB){
+        value = value_l - value_r;
+    }
+    else if (node->data == MUL){
+        value = value_l * value_r;
+    }
+    else if (node->data == DIV){
+        value = value_l / value_r;
+    }
+    return value;
 }
